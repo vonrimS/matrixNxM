@@ -9,60 +9,74 @@ public class Matrix {
         this.rows = rows;
         this.columns = columns;
         this.matrix = new Element[rows][columns];
-        // Заполняем матрицу элементами
-        for (int i = 0; i < rows; i++){
-            for (int j = 0; j < columns; j++){
+        // Populate the matrix with Elements
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
                 matrix[i][j] = new Element(i, j);
             }
         }
     }
 
-    public Element[] findNeighbors(Element element){
+    public Element[] findNeighbors(Element element) {
         int x = element.getX();
         int y = element.getY();
-        // Проверяем соседние элементы
-        Element[] neighbors = new Element[8];
 
-        // Если элемент находится в углу матрицы
-        if (x == 0 && y == 0) {
-            // Левый верхний угол
-            neighbors = new Element[3];
-            neighbors[0] = matrix[x][y + 1];     // Верхний сосед
-            neighbors[1] = matrix[x + 1][y];     // Правый сосед
-            neighbors[2] = matrix[x + 1][y + 1]; // Правый нижний угол
-        } else if (x == 0 && y == columns - 1) {
-            // Правый верхний угол
-            neighbors = new Element[3];
-            neighbors[0] = matrix[x][y - 1];     // Левый сосед
-            neighbors[1] = matrix[x + 1][y];     // Правый сосед
-            neighbors[2] = matrix[x + 1][y - 1]; // Левый нижний угол
-        } else if (x == rows - 1 && y == 0) {
-            // Левый нижний угол
-            neighbors = new Element[3];
-            neighbors[0] = matrix[x][y + 1];     // Верхний сосед
-            neighbors[1] = matrix[x - 1][y];     // Левый сосед
-            neighbors[2] = matrix[x - 1][y + 1]; // Правый верхний угол
-        } else if (x == rows - 1 && y == columns - 1) {
-            // Правый нижний угол
-            neighbors = new Element[3];
-            neighbors[0] = matrix[x][y - 1];     // Левый сосед
-            neighbors[1] = matrix[x - 1][y];     // Верхний сосед
-            neighbors[2] = matrix[x - 1][y - 1]; // Левый верхний угол
+        if (isCornerPosition(x, y)) {
+            // Handle corner positions
+            return findCornerNeighbors(x, y);
         } else {
-            // Если элемент не в углу, то есть 8 соседних элементов
-            neighbors = new Element[8];
-            neighbors[0] = matrix[x - 1][y - 1]; // Левый верхний угол
-            neighbors[1] = matrix[x - 1][y];     // Верхний сосед
-            neighbors[2] = matrix[x - 1][y + 1]; // Правый верхний угол
-            neighbors[3] = matrix[x][y - 1];     // Левый сосед
-            neighbors[4] = matrix[x][y + 1];     // Правый сосед
-            neighbors[5] = matrix[x + 1][y - 1]; // Левый нижний угол
-            neighbors[6] = matrix[x + 1][y];     // Нижний сосед
-            neighbors[7] = matrix[x + 1][y + 1]; // Правый нижний угол
+            return findNonCornerNeighbors(x, y);
+        }
+    }
+
+    private Element[] findCornerNeighbors(int x, int y) {
+        Element[] neighbors = new Element[3];
+
+        if (x == 0 && y == 0) {
+            // Left top corner
+            neighbors[0] = matrix[x][y + 1];     // Top neighbor
+            neighbors[1] = matrix[x + 1][y];     // Right neighbor
+            neighbors[2] = matrix[x + 1][y + 1]; // Bottom-right neighbor
+        } else if (x == 0 && y == columns - 1) {
+            // Right top corner
+            neighbors[0] = matrix[x][y - 1];     // Left neighbor
+            neighbors[1] = matrix[x + 1][y];     // Right neighbor
+            neighbors[2] = matrix[x + 1][y - 1]; // Bottom-left neighbor
+        } else if (x == rows - 1 && y == 0) {
+            // Left bottom corner
+            neighbors[0] = matrix[x][y + 1];     // Top neighbor
+            neighbors[1] = matrix[x - 1][y];     // Left neighbor
+            neighbors[2] = matrix[x - 1][y + 1]; // Top-right neighbor
+        } else if (x == rows - 1 && y == columns - 1) {
+            // Right bottom corner
+            neighbors[0] = matrix[x][y - 1];     // Left neighbor
+            neighbors[1] = matrix[x - 1][y];     // Top neighbor
+            neighbors[2] = matrix[x - 1][y - 1]; // Top-left neighbor
         }
 
         return neighbors;
     }
 
+    private Element[] findNonCornerNeighbors(int x, int y) {
+        // Handle non-corner positions
+        Element[] neighbors = new Element[8];
+        neighbors[0] = matrix[x - 1][y - 1]; // Top-left neighbor
+        neighbors[1] = matrix[x - 1][y];     // Top neighbor
+        neighbors[2] = matrix[x - 1][y + 1]; // Top-right neighbor
+        neighbors[3] = matrix[x][y - 1];     // Left neighbor
+        neighbors[4] = matrix[x][y + 1];     // Right neighbor
+        neighbors[5] = matrix[x + 1][y - 1]; // Bottom-left neighbor
+        neighbors[6] = matrix[x + 1][y];     // Bottom neighbor
+        neighbors[7] = matrix[x + 1][y + 1]; // Bottom-right neighbor
+        return neighbors;
+    }
+
+
+    private boolean isCornerPosition(int x, int y) {
+        return (x == 0 && y == 0) ||
+                (x == 0 && y == columns - 1) ||
+                (x == rows - 1 && y == 0) ||
+                (x == rows - 1 && y == columns - 1);
+    }
 
 }
