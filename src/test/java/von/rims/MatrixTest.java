@@ -21,13 +21,18 @@ class MatrixTest {
         matrix = new Matrix(3, 3);
     }
 
-    // Set access level as 'accessible' to private method with Reflection API
+    // Set access level as 'accessible' to private method 'findCornerNeighbors' with Reflection API
     private Method getAccessibleFindCornerNeighborsMethod(String methodName) throws NoSuchMethodException {
         Method method = matrix.getClass().getDeclaredMethod(methodName, int.class, int.class);
         method.setAccessible(true);
         return method;
     }
 
+    private boolean invokeIsCornerPosition(int x, int y) throws Exception {
+        Method method = matrix.getClass().getDeclaredMethod("isCornerPosition", int.class, int.class);
+        method.setAccessible(true);
+        return (boolean) method.invoke(matrix, x, y);
+    }
 
     @Test
     public void testMatrixInitialization() {
@@ -141,4 +146,28 @@ class MatrixTest {
         assertEquals(matrix.getElement(1, 1), neighbors[2], "Top-left neighbor should be correct");
     }
 
+    @Test
+    public void testIsCornerPositionTopLeft() throws Exception {
+        assertTrue(invokeIsCornerPosition(0, 0), "Top-left corner should be identified as corner");
+    }
+
+    @Test
+    public void testIsCornerPositionTopRight() throws Exception {
+        assertTrue(invokeIsCornerPosition(0, matrix.getColumns() - 1), "Top-right corner should be identified as corner");
+    }
+
+    @Test
+    public void testIsCornerPositionBottomLeft() throws Exception {
+        assertTrue(invokeIsCornerPosition(matrix.getRows() - 1, 0), "Bottom-left corner should be identified as corner");
+    }
+
+    @Test
+    public void testIsCornerPositionBottomRight() throws Exception {
+        assertTrue(invokeIsCornerPosition(matrix.getRows() - 1, matrix.getColumns() - 1), "Bottom-right corner should be identified as corner");
+    }
+
+    @Test
+    public void testIsCornerPositionNotCorner() throws Exception {
+        assertFalse(invokeIsCornerPosition(1, 1), "Non-corner position should not be identified as corner");
+    }
 }
