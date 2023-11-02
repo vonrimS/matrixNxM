@@ -1,16 +1,34 @@
 package von.rims;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class MatrixTest {
 
+    private static Matrix matrix;
+
+    @BeforeAll
+    public static void setup(){
+        matrix = new Matrix(3, 3);
+    }
+
+    // Set access level as 'accessible' to private method with Reflection API
+    private Method getAccessibleFindCornerNeighborsMethod(String methodName) throws NoSuchMethodException {
+        Method method = matrix.getClass().getDeclaredMethod(methodName, int.class, int.class);
+        method.setAccessible(true);
+        return method;
+    }
+
+
     @Test
     public void testMatrixInitialization() {
         int rows = 3;
         int columns = 3;
-        Matrix matrix = new Matrix(rows, columns);
 
         assertEquals(rows, matrix.getRows(), "Matrix should have correct number of rows");
         assertEquals(columns, matrix.getColumns(), "Matrix should have correct number of columns");
@@ -26,7 +44,6 @@ class MatrixTest {
 
     @Test
     public void testMatrixBounds() {
-        Matrix matrix = new Matrix(3, 3);
         assertNull(matrix.getElement(3,3), "Getting element outside bounds should return null");
         assertNull(matrix.getElement(-1,-1), "Getting element with negative indices should return null");
     }
@@ -35,7 +52,6 @@ class MatrixTest {
     public void testMatrixElementsCorrectness() {
         int rows = 3;
         int columns = 3;
-        Matrix matrix = new Matrix(rows, columns);
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
@@ -49,7 +65,6 @@ class MatrixTest {
 
     @Test
     public void testFindNeighborsForCornerElement() {
-        Matrix matrix = new Matrix(3, 3);
         Element cornerElement = matrix.getElement(0, 0);
         Element[] neighbors = matrix.findNeighbors(cornerElement);
 
@@ -60,7 +75,6 @@ class MatrixTest {
 
     @Test
     public void testFindNeighborsForNonCornerElement() {
-        Matrix matrix = new Matrix(3, 3);
         Element nonCornerElement = matrix.getElement(1, 1);
         Element[] neighbors = matrix.findNeighbors(nonCornerElement);
 
@@ -70,10 +84,26 @@ class MatrixTest {
 
     @Test
     public void testFindNeighborsForNullElement() {
-        Matrix matrix = new Matrix(3, 3);
         assertThrows(IllegalArgumentException.class, () -> {
             matrix.findNeighbors(null);
         }, "Method should throw IllegalArgumentException for null element");
     }
+
+    @Test
+    public void testFindCornerNeighborsTopLeft() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method method = getAccessibleFindCornerNeighborsMethod("findCornerNeighbors");
+
+        Element[] neighbors = (Element[]) method.invoke(matrix, 0, 0);
+
+        assertNotNull(neighbors, "Neighbors array should not be null");
+        assertEquals(3, neighbors.length, "Top left corner element should have 3 neighbors");
+
+        assertEquals(matrix.getElement(0, 1), neighbors[0], "Top neighbor should be correct");
+        assertEquals(matrix.getElement(1, 0), neighbors[1], "Right neighbor should be correct");
+        assertEquals(matrix.getElement(1, 1), neighbors[2], "Bottom-right neighbor should be correct");
+    }
+
+
+
 
 }
