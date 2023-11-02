@@ -11,6 +11,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class MatrixTest {
 
     private static Matrix matrix;
+    private Method method = getAccessibleFindCornerNeighborsMethod("findCornerNeighbors");
+
+    MatrixTest() throws NoSuchMethodException {
+    }
 
     @BeforeAll
     public static void setup(){
@@ -90,9 +94,7 @@ class MatrixTest {
     }
 
     @Test
-    public void testFindCornerNeighborsTopLeft() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method method = getAccessibleFindCornerNeighborsMethod("findCornerNeighbors");
-
+    public void testFindCornerNeighborsTopLeft() throws InvocationTargetException, IllegalAccessException {
         Element[] neighbors = (Element[]) method.invoke(matrix, 0, 0);
 
         assertNotNull(neighbors, "Neighbors array should not be null");
@@ -103,7 +105,40 @@ class MatrixTest {
         assertEquals(matrix.getElement(1, 1), neighbors[2], "Bottom-right neighbor should be correct");
     }
 
+    @Test
+    public void testFindCornerNeighborsTopRight() throws  InvocationTargetException, IllegalAccessException {
+        Element[] neighbors = (Element[]) method.invoke(matrix, 0, 2);
 
+        assertNotNull(neighbors, "Neighbors array should not be null");
+        assertEquals(3, neighbors.length, "Top right corner element should have 3 neighbors");
 
+        assertEquals(matrix.getElement(0, 1), neighbors[0], "Left neighbor should be correct");
+        assertEquals(matrix.getElement(1, 2), neighbors[1], "Bottom neighbor should be correct");
+        assertEquals(matrix.getElement(1, 1), neighbors[2], "Bottom-left neighbor should be correct");
+    }
+
+    @Test
+    public void testFindCornerNeighborsBottomLeft() throws  InvocationTargetException, IllegalAccessException {
+        Element[] neighbors = (Element[]) method.invoke(matrix, 2, 0);
+
+        assertNotNull(neighbors, "Neighbors array should not be null");
+        assertEquals(3, neighbors.length, "Bottom left corner element should have 3 neighbors");
+
+        assertEquals(matrix.getElement(2, 1), neighbors[0], "Top neighbor should be correct");
+        assertEquals(matrix.getElement(1, 0), neighbors[1], "Left neighbor should be correct");
+        assertEquals(matrix.getElement(1, 1), neighbors[2], "Top-right neighbor should be correct");
+    }
+
+    @Test
+    public void testFindCornerNeighborsBottomRight() throws InvocationTargetException, IllegalAccessException {
+        Element[] neighbors = (Element[]) method.invoke(matrix, 2, 2);
+
+        assertNotNull(neighbors, "Neighbors array should not be null");
+        assertEquals(3, neighbors.length, "Bottom right corner element should have 3 neighbors");
+
+        assertEquals(matrix.getElement(2, 1), neighbors[0], "Left neighbor should be correct");
+        assertEquals(matrix.getElement(1, 2), neighbors[1], "Top neighbor should be correct");
+        assertEquals(matrix.getElement(1, 1), neighbors[2], "Top-left neighbor should be correct");
+    }
 
 }
