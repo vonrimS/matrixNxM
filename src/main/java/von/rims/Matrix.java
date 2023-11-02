@@ -5,6 +5,23 @@ public class Matrix {
     private int columns;
     private Element[][] matrix;
 
+    public int getRows() {
+        return rows;
+    }
+
+    public int getColumns() {
+        return columns;
+    }
+
+    public Element getElement(int row, int column) {
+        if (row >= 0 && row < rows && column >= 0 && column < columns) {
+            return matrix[row][column];
+        } else {
+            // In case of the index is out of the bound
+            return null;
+        }
+    }
+
     public Matrix(int rows, int columns) {
         this.rows = rows;
         this.columns = columns;
@@ -17,7 +34,11 @@ public class Matrix {
         }
     }
 
+
     public Element[] findNeighbors(Element element) {
+        if (element == null)
+            throw new IllegalArgumentException("Element cannot be null");
+
         int x = element.getX();
         int y = element.getY();
 
@@ -78,5 +99,6 @@ public class Matrix {
                 (x == rows - 1 && y == 0) ||
                 (x == rows - 1 && y == columns - 1);
     }
+
 
 }
